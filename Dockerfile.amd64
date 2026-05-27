@@ -1,0 +1,57 @@
+# syntax=docker/dockerfile:1
+# amd64 架构 Dockerfile
+# 基础镜像：华为云 SWR 国内镜像源
+FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/node:22-alpine AS build
+
+WORKDIR /app
+
+# 配置 alpine apk 国内镜像源
+RUN sed -i 's|https://dl-cdn.alpinelinux.org/alpine|https://repo.huaweicloud.com/alpine|g' /etc/apk/repositories \
+    && apk update
+
+# 配置 npm 国内镜像源（淘宝镜像）
+RUN npm config set registry https://registry.npmmirror.com
+
+# 先复制依赖文件，充分利用 Docker 缓存层
+COPY package*.json ./
+
+# 安装生产依赖（npm ci 比 npm install 更适合构建环境）
+RUN npm ci --omit=dev
+
+# 再复制源码（这一层仅在代码变更时重建）
+COPY . .
+
+# --- 运行阶段 ---
+FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/node:22-alpine
+
+WORKDIR /app
+
+# 配置 alpine apk 国内镜像源
+RUN sed -i 's|https://dl-cdn.alpinelinux.org/alpine|https://repo.huaweicloud.com/alpine|g' /etc/apk/repositories \
+    && apk update \
+    && apk add --no-cache dumb-init
+
+# 设置生产环境变量
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV LISTEN=0.0.0.0
+
+# 从构建阶段复制已安装好的依赖和源码
+COPY --from=build /app .
+
+# 创建非 root 用户运行服务（安全最佳实践）
+RUN addgroup -g 1001 -S nodejs \
+    && adduser -S mcp -u 1001 \
+    && chown -R mcp:nodejs /app
+USER mcp
+
+# 暴露容器内部端口
+EXPOSE 3000
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://127.0.0.1:3000/mcp', (r) => {process.exit(r.statusCode === 405 ? 0 : 1)})" || exit 1
+
+# 使用 dumb-init 作为 PID 1，正确处理信号
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "src/index.js"]
