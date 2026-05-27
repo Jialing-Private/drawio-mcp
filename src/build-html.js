@@ -85,19 +85,19 @@ console.log(`mxElkLayout: ${mxElkLayoutPath} (${(mxElkLayoutJs.length / 1024).to
 
 // Read the shared XML reference (single source of truth for all prompts)
 const xmlReference = fs.readFileSync(
-  path.join(__dirname, "..", "..", "shared", "xml-reference.md"),
+  path.join(__dirname, "..", "shared", "xml-reference.md"),
   "utf-8"
 );
 
 // Read the shared Mermaid reference (appended to the create_diagram
 // tool description so LLMs get concrete per-type syntax hints).
 const mermaidReference = fs.readFileSync(
-  path.join(__dirname, "..", "..", "shared", "mermaid-reference.md"),
+  path.join(__dirname, "..", "shared", "mermaid-reference.md"),
   "utf-8"
 );
 
 // Read the shape search index (optional — skip if not yet generated)
-const shapeIndexPath = path.join(__dirname, "..", "..", "shape-search", "search-index.json");
+const shapeIndexPath = path.join(__dirname, "..", "shape-search", "search-index.json");
 let shapeIndex = null;
 
 if (fs.existsSync(shapeIndexPath))

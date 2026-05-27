@@ -111,7 +111,7 @@ if (process.env.VIEWER_PATH)
 
 // Read the shared XML reference once at startup (single source of truth)
 const xmlReference = fs.readFileSync(
-  path.join(__dirname, "..", "..", "shared", "xml-reference.md"),
+  path.join(__dirname, "..", "shared", "xml-reference.md"),
   "utf-8"
 );
 
@@ -119,12 +119,12 @@ const xmlReference = fs.readFileSync(
 // tool description so the LLM gets concrete per-type syntax hints for
 // every supported Mermaid diagram plus flowchart styling guidance.
 const mermaidReference = fs.readFileSync(
-  path.join(__dirname, "..", "..", "shared", "mermaid-reference.md"),
+  path.join(__dirname, "..", "shared", "mermaid-reference.md"),
   "utf-8"
 );
 
 // Read the shape search index (optional — skip if not yet generated)
-const shapeIndexPath = path.join(__dirname, "..", "..", "shape-search", "search-index.json");
+const shapeIndexPath = path.join(__dirname, "..", "shape-search", "search-index.json");
 var shapeIndex = null;
 
 if (fs.existsSync(shapeIndexPath))
