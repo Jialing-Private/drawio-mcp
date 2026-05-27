@@ -10,6 +10,11 @@ Renders draw.io diagrams inline in AI chat interfaces using the MCP Apps protoco
 | `src/index.js` | Node.js entry (Express + stdio transports) |
 | `src/worker.js` | Cloudflare Workers entry (Web Standard fetch handler) |
 | `src/build-html.js` | Build script: generates `generated-html.js` for the Worker |
+| `Dockerfile.amd64` | Docker image build for amd64 (Huawei Cloud domestic mirror) |
+| `Dockerfile.arm64` | Docker image build for arm64 (Huawei Cloud domestic mirror) |
+| `./docker-compose.amd64.yml` | Docker Compose orchestration for amd64 (host port 18080) |
+| `./docker-compose.arm64.yml` | Docker Compose orchestration for arm64 (host port 20000) |
+| `./DEPLOY.md` | Complete Docker deployment guide (Aliyun, Nginx, env vars)
 
 ## Architecture
 
@@ -141,4 +146,8 @@ npm start              # Node.js server on port 3001
 npm run build:worker   # Generate generated-html.js
 npm run dev:worker     # Wrangler local dev (port 8787)
 npm run deploy         # Build + deploy to Cloudflare Workers
+
+# Docker deployment (from repo root)
+docker-compose -f docker-compose.amd64.yml up --build -d   # amd64
+docker-compose -f docker-compose.arm64.yml up --build -d   # arm64
 ```

@@ -58,6 +58,35 @@ npm start
 
 The server listens on `http://localhost:3001/mcp` by default. Set the `PORT` environment variable to change the port.
 
+### Docker 部署
+
+项目提供了多架构 Docker 部署支持，适用于 amd64 和 arm64（如阿里云 ARM 实例）服务器：
+
+| 文件 | 用途 |
+|------|------|
+| `Dockerfile.amd64` | amd64 架构镜像构建（华为云国内镜像源） |
+| `Dockerfile.arm64` | arm64 架构镜像构建（华为云国内镜像源） |
+| `./docker-compose.amd64.yml` | amd64 编排文件（宿主机端口 18080） |
+| `./docker-compose.arm64.yml` | arm64 编排文件（宿主机端口 20000） |
+
+**amd64 部署：**
+
+```bash
+./deploy.sh
+# 或手动：
+docker-compose -f docker-compose.amd64.yml up --build -d
+```
+
+**arm64 部署：**
+
+```bash
+./deploy.sh
+# 或手动：
+docker-compose -f docker-compose.arm64.yml up --build -d
+```
+
+详细部署说明（含公网访问配置、Nginx 反向代理、环境变量等）请参考 [`./DEPLOY.md`](./DEPLOY.md)。
+
 ### Connecting to Claude.ai
 
 Since Claude.ai needs a public URL, use a tunnel:
